@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnóstico de Social Media · Veez</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ─── Tokens ─────────────────────────────── */
+    :root {
+      --pink:   #E91E8C;
+      --lime:   #C5DF00;
+      --purple: #5C59C2;
+      --orange: #FF6B35;
+      --sky:    #C2E8F8;
+      --soft-pink: #F9C8DA;
+      --black:  #1A1A1A;
+      --white:  #FFFFFF;
+      --gray:   #F4F4F4;
+      --gray2:  #E0E0E0;
+      --text:   #2A2A2A;
+
+      --s1: #5C59C2;
+      --s2: #C5DF00;
+      --s3: #FF6B35;
+      --s4: #E91E8C;
+      --s5: #3DB8E0;
+    }
+
+    /* ─── Reset ──────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--white);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Screen System ──────────────────────── */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; flex-direction: column; }
+
+    /* ─── Progress Bar ───────────────────────── */
+    #progress-bar-wrap {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: var(--gray2);
+      z-index: 100;
+      display: none;
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--pink), var(--purple));
+      transition: width .4s ease;
+      width: 0%;
+    }
+
+    /* ─── Top Nav ────────────────────────────── */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 32px;
+      border-bottom: 2px solid var(--black);
+    }
+
+    .logo-text {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text span { color: var(--pink); }
+
+    .q-counter {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--black);
+      opacity: .5;
+    }
+
+    /* ─── WELCOME SCREEN ─────────────────────── */
+    #screen-welcome {
+      background: var(--white);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .welcome-inner {
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .welcome-logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+
+    .welcome-logo span { color: var(--pink); }
+
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--lime);
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+
+    .welcome-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--black);
+      margin-bottom: 16px;
+    }
+
+    .welcome-title em {
+      font-style: normal;
+      color: var(--pink);
+      position: relative;
+      display: inline-block;
+    }
+
+    .welcome-sub {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--black);
+      opacity: .65;
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+
+    .welcome-stats {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--gray);
+      border: 2px solid var(--black);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Form */
+    .welcome-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--black);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      outline: none;
+      background: var(--white);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .form-group input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 4px rgba(233,30,140,.12);
+    }
+
+    .form-group input::placeholder { opacity: .4; }
+
+    .btn-start {
+      width: 100%;
+      background: var(--pink);
+      color: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      padding: 18px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 4px 4px 0 var(--black);
+      margin-top: 8px;
+    }
+
+    .btn-start:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .btn-start:active {
+      transform: translate(1px, 1px);
+      box-shadow: 2px 2px 0 var(--black);
+    }
+
+    .welcome-disclaimer {
+      font-size: 12px;
+      color: var(--black);
+      opacity: .4;
+      margin-top: 20px;
+    }
+
+    /* Deco shapes */
+    .deco-shape {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .deco-star {
+      width: 60px; height: 60px;
+      background: var(--lime);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+
+    /* ─── SECTION INTRO ──────────────────────── */
+    #screen-section {
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .section-intro-inner {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .section-emoji {
+      font-size: 72px;
+      margin-bottom: 24px;
+      display: block;
+      animation: pop .4s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(.5); opacity: 0; }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .section-number-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 2px solid var(--black);
+      margin-bottom: 20px;
+    }
+
+    .section-intro-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-intro-desc {
+      font-size: 16px;
+      line-height: 1.65;
+      opacity: .7;
+      margin-bottom: 40px;
+    }
+
+    .section-q-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: .55;
+      margin-bottom: 36px;
+    }
+
+    .btn-section-start {
+      padding: 16px 40px;
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 4px 4px 0 var(--black);
+      color: var(--black);
+    }
+
+    .btn-section-start:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+
+    /* ─── QUESTION SCREEN ────────────────────── */
+    #screen-question {
+      padding: 0;
+      justify-content: flex-start;
+    }
+
+    .q-section-stripe {
+      width: 100%;
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--black);
+    }
+
+    .q-section-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--black);
+    }
+
+    .q-section-name {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .question-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+
+    .question-inner {
+      max-width: 640px;
+      width: 100%;
+    }
+
+    .q-number {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      opacity: .4;
+      margin-bottom: 16px;
+    }
+
+    .q-text {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--black);
+      margin-bottom: 36px;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 18px 22px;
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 14px;
+      text-align: left;
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all .18s ease;
+      position: relative;
+      box-shadow: 3px 3px 0 transparent;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .option-letter {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      border: 2px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: all .18s;
+    }
+
+    .option-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .option-btn.selected {
+      border-color: var(--pink);
+      box-shadow: 4px 4px 0 var(--pink);
+      transform: translate(-2px, -2px);
+    }
+
+    .option-btn.selected .option-letter {
+      background: var(--pink);
+      border-color: var(--pink);
+      color: var(--white);
+    }
+
+    /* Nav buttons */
+    .q-nav {
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 2px solid var(--black);
+    }
+
+    .btn-prev {
+      padding: 12px 24px;
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+      box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .btn-prev:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .btn-prev:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-next {
+      padding: 14px 32px;
+      background: var(--pink);
+      color: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 10px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      box-shadow: 4px 4px 0 var(--black);
+      opacity: .35;
+      pointer-events: none;
+    }
+
+    .btn-next.enabled {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .btn-next.enabled:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+
+    /* Question slide animation */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-inner.animating {
+      animation: slideIn .3s ease forwards;
+    }
+
+    /* ─── RESULTS SCREEN ─────────────────────── */
+    #screen-results {
+      background: var(--white);
+      padding: 0;
+    }
+
+    .results-top {
+      background: var(--black);
+      color: var(--white);
+      padding: 48px 32px;
+      text-align: center;
+    }
+
+    .results-logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 24px;
+    }
+
+    .results-headline {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      color: var(--white);
+    }
+
+    .results-headline span { color: var(--lime); }
+
+    .results-sub {
+      font-size: 15px;
+      opacity: .55;
+      margin-bottom: 48px;
+    }
+
+    /* Score donut */
+    .score-circle-wrap {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 12px;
+    }
+
+    .score-circle-wrap svg { transform: rotate(-90deg); }
+
+    .score-circle-bg { fill: none; stroke: rgba(255,255,255,.1); stroke-width: 14; }
+    .score-circle-fill {
+      fill: none;
+      stroke-width: 14;
+      stroke-linecap: round;
+      stroke-dasharray: 502;
+      stroke-dashoffset: 502;
+      transition: stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    .score-number {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .score-pct {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: 12px;
+      opacity: .5;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .score-level-badge {
+      display: inline-block;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 8px 24px;
+      border-radius: 100px;
+      border: 2px solid rgba(255,255,255,.3);
+      margin-top: 8px;
+    }
+
+    /* Results body */
+    .results-body {
+      padding: 48px 24px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .results-section-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--black);
+    }
+
+    /* Section bars */
+    .section-bars { display: flex; flex-direction: column; gap: 18px; margin-bottom: 48px; }
+
+    .section-bar-item {}
+
+    .section-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .section-bar-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .section-bar-score {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .section-bar-track {
+      width: 100%;
+      height: 12px;
+      background: var(--gray);
+      border-radius: 100px;
+      border: 2px solid var(--black);
+      overflow: hidden;
+    }
+
+    .section-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* Insights */
+    .insights-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .insight-card {
+      border: 2px solid var(--black);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .insight-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: .5;
+      margin-bottom: 8px;
+    }
+
+    .insight-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .insight-desc {
+      font-size: 13px;
+      opacity: .6;
+      line-height: 1.55;
+    }
+
+    /* Recommendations */
+    .recommendations { margin-bottom: 48px; }
+
+    .rec-card {
+      border: 2px solid var(--black);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      box-shadow: 3px 3px 0 var(--black);
+      background: var(--white);
+    }
+
+    .rec-number {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 2px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .rec-content {}
+
+    .rec-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .rec-text {
+      font-size: 13px;
+      line-height: 1.6;
+      opacity: .7;
+    }
+
+    /* CTA card */
+    .cta-card {
+      background: var(--pink);
+      border: 2px solid var(--black);
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .cta-card-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+
+    .cta-card-text {
+      font-size: 15px;
+      color: var(--white);
+      opacity: .85;
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    .cta-btn-wa {
+      display: inline-block;
+      background: var(--white);
+      color: var(--pink);
+      border: 2px solid var(--black);
+      border-radius: 12px;
+      padding: 16px 36px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .15s;
+      box-shadow: 4px 4px 0 var(--black);
+      cursor: pointer;
+    }
+
+    .cta-btn-wa:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--black);
+    }
+
+    .cta-sub {
+      font-size: 12px;
+      color: var(--white);
+      opacity: .6;
+      margin-top: 16px;
+    }
+
+    /* ─── Responsive ─────────────────────────── */
+    @media (max-width: 600px) {
+      .welcome-title { font-size: 36px; }
+      .q-text { font-size: 24px; }
+      .results-headline { font-size: 30px; }
+      .insights-row { grid-template-columns: 1fr; }
+      .top-nav { padding: 14px 20px; }
+      .q-nav { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Progress bar ─────────────────────── -->
+<div id="progress-bar-wrap">
+  <div id="progress-bar"></div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 1 — WELCOME
+════════════════════════════════════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-inner">
+    <div class="welcome-logo">·<span>veez</span></div>
+
+    <div class="welcome-badge">✦ gratuito e em 15 minutos</div>
+
+    <h1 class="welcome-title">
+      como está o<br>seu <em>Instagram</em><br>de verdade?
+    </h1>
+
+    <p class="welcome-sub">
+      21 perguntas. 5 áreas analisadas. Um diagnóstico completo com o que está funcionando — e o que está travando o seu crescimento.
+    </p>
+
+    <div class="welcome-stats">
+      <div class="stat-pill">⏱ ~15 minutos</div>
+      <div class="stat-pill">📋 21 perguntas</div>
+      <div class="stat-pill">📊 resultado na hora</div>
+    </div>
+
+    <div class="welcome-form">
+      <div class="form-group">
+        <label for="input-name">Seu nome</label>
+        <input type="text" id="input-name" placeholder="Como posso te chamar?" autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label for="input-insta">Seu @Instagram</label>
+        <input type="text" id="input-insta" placeholder="@seuperfil" autocomplete="off" />
+      </div>
+      <button class="btn-start" id="btn-start">
+        Iniciar diagnóstico →
+      </button>
+      <p class="welcome-disclaimer">Seus dados são usados apenas para personalizar o resultado. Nada de spam.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 2 — SECTION INTRO
+════════════════════════════════════════ -->
+<div id="screen-section" class="screen">
+  <nav class="top-nav">
+    <div class="logo-text">·<span>veez</span></div>
+    <div id="section-counter" class="q-counter">Seção 1 de 5</div>
+  </nav>
+
+  <div style="flex:1; display:flex; align-items:center; justify-content:center; padding: 40px 24px;">
+    <div class="section-intro-inner">
+      <span id="s-emoji" class="section-emoji">👤</span>
+      <div id="s-badge" class="section-number-badge">Seção 1 de 5</div>
+      <h2 id="s-title" class="section-intro-title">Perfil &amp; Bio</h2>
+      <p id="s-desc" class="section-intro-desc">Vamos começar pela base. Seu perfil é a porta de entrada — e a maioria das profissionais perde clientes aqui antes mesmo de elas verem o primeiro post.</p>
+      <p id="s-q-count" class="section-q-count">📋 4 perguntas nesta seção</p>
+      <button id="btn-section-start" class="btn-section-start">Começar esta seção →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 3 — QUESTION
+════════════════════════════════════════ -->
+<div id="screen-question" class="screen">
+  <nav class="top-nav">
+    <div class="logo-text">·<span>veez</span></div>
+    <div id="q-counter-display" class="q-counter">1 / 21</div>
+  </nav>
+
+  <div id="q-section-stripe" class="q-section-stripe">
+    <div id="q-section-dot" class="q-section-dot"></div>
+    <span id="q-section-name" class="q-section-name">Perfil &amp; Bio</span>
+  </div>
+
+  <div class="question-area">
+    <div class="question-inner" id="question-inner">
+      <p id="q-number" class="q-number">Pergunta 1 de 21</p>
+      <h2 id="q-text" class="q-text">Pergunta vai aqui</h2>
+      <div id="options-container" class="options-grid"></div>
+    </div>
+  </div>
+
+  <div class="q-nav">
+    <button class="btn-prev" id="btn-prev">← Anterior</button>
+    <button class="btn-next" id="btn-next">Próxima →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SCREEN 4 — RESULTS
+════════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-top">
+    <div class="results-logo">·veez</div>
+    <h1 class="results-headline" id="results-headline">
+      Diagnóstico pronto,<br><span id="results-name">amiga</span>!
+    </h1>
+    <p class="results-sub" id="results-insta-display"></p>
+
+    <div class="score-circle-wrap">
+      <svg viewBox="0 0 200 200" width="200" height="200">
+        <circle class="score-circle-bg" cx="100" cy="100" r="80" />
+        <circle class="score-circle-fill" id="score-circle" cx="100" cy="100" r="80" stroke="#E91E8C" />
+      </svg>
+      <div class="score-number">
+        <div class="score-pct" id="score-pct-display">0</div>
+        <div class="score-label">pontos</div>
+      </div>
+    </div>
+    <div class="score-level-badge" id="level-badge">—</div>
+  </div>
+
+  <div class="results-body">
+
+    <!-- Section bars -->
+    <h3 class="results-section-title">Análise por área</h3>
+    <div class="section-bars" id="section-bars">
+      <!-- generated by JS -->
+    </div>
+
+    <!-- Insights -->
+    <h3 class="results-section-title">Seus insights</h3>
+    <div class="insights-row" id="insights-row">
+      <!-- generated by JS -->
+    </div>
+
+    <!-- Recommendations -->
+    <h3 class="results-section-title">O que fazer agora</h3>
+    <div class="recommendations" id="recommendations-list">
+      <!-- generated by JS -->
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-card">
+      <div class="cta-card-title">quer transformar esse diagnóstico em estratégia real?</div>
+      <p class="cta-card-text">
+        A Veez pega exatamente o que você acabou de responder e monta um plano de posicionamento completo para o seu Instagram. Sem achismo. Com método.
+      </p>
+      <a href="https://wa.me/55XXXXXXXXXXX?text=Oi!%20Acabei%20de%20fazer%20o%20diagn%C3%B3stico%20de%20social%20media%20e%20quero%20saber%20mais!" 
+         class="cta-btn-wa" target="_blank" id="cta-wa-btn">
+        Falar com a Veez →
+      </a>
+      <p class="cta-sub">Vagas limitadas por mês · Sem compromisso na primeira conversa</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+const SECTIONS = [
+  {
+    id: 1, name: "Perfil & Bio", emoji: "👤", color: "#5C59C2", textColor: "#fff",
+    desc: "Vamos começar pela base. Seu perfil é a porta de entrada — e a maioria das profissionais perde clientes aqui antes mesmo de elas verem o primeiro post.",
+    recLow: {
+      title: "Reescreva sua bio com estratégia",
+      text: "Sua bio tem menos de 3 segundos para convencer quem visita. Ela precisa dizer quem você é, para quem você atende e o que a pessoa deve fazer a seguir."
+    }
+  },
+  {
+    id: 2, name: "Conteúdo & Estratégia", emoji: "🧠", color: "#C5DF00", textColor: "#1A1A1A",
+    desc: "Postar não é o mesmo que se posicionar. Aqui vamos entender se o seu conteúdo tem direção — ou está só preenchendo espaço no feed.",
+    recLow: {
+      title: "Monte um calendário editorial com propósito",
+      text: "Cada post precisa de um objetivo: educar, gerar confiança ou converter. Sem isso, você posta muito mas constrói pouco."
+    }
+  },
+  {
+    id: 3, name: "Identidade Visual", emoji: "🎨", color: "#FF6B35", textColor: "#fff",
+    desc: "Sua marca visual é o que faz sua cliente lembrar de você quando fecha o Instagram. Vamos ver se o que ela vê reflete quem você é.",
+    recLow: {
+      title: "Defina uma identidade visual consistente",
+      text: "Perfis que convertem têm uma cara reconhecível. Cores, fontes e estilo padrão não são luxo — são estratégia. Um feed inconsistente transmite amadorismo, mesmo que o serviço seja excelente."
+    }
+  },
+  {
+    id: 4, name: "Engajamento", emoji: "💬", color: "#E91E8C", textColor: "#fff",
+    desc: "Seguidora que não interage não vira cliente. Aqui vamos entender se o seu perfil cria conexão real — ou só acumula números.",
+    recLow: {
+      title: "Ative sua audiência com CTAs e respostas",
+      text: "Responder DMs e comentários em até 24h aumenta o engajamento orgânico e mostra para o algoritmo que seu perfil está ativo. Um CTA por post é o mínimo."
+    }
+  },
+  {
+    id: 5, name: "Resultados & Conversão", emoji: "📈", color: "#3DB8E0", textColor: "#fff",
+    desc: "No final, o Instagram precisa trabalhar pelo seu negócio. Vamos ver se ele está gerando resultados concretos ou só existindo.",
+    recLow: {
+      title: "Crie um funil de conversão no Instagram",
+      text: "Ter seguidoras sem converter em clientes indica falta de funil. Sua bio, posts e stories precisam trabalhar em conjunto para levar a pessoa do perfil à DM — e da DM ao contrato."
+    }
+  }
+];
+
+const QUESTIONS = [
+  // ── Section 1: Perfil & Bio (4) ──────────────
+  {
+    id: 1, section: 1,
+    text: "Sua bio do Instagram descreve claramente o que você faz e para quem você atende?",
+    options: [
+      { text: "Sim — está clara, específica e estratégica", score: 4 },
+      { text: "Mais ou menos, mas poderia ser bem melhor", score: 2 },
+      { text: "Não tenho certeza se está boa", score: 1 },
+      { text: "Não — está vaga, genérica ou desatualizada", score: 0 }
+    ]
+  },
+  {
+    id: 2, section: 1,
+    text: "Você tem foto de perfil profissional, clara e reconhecível?",
+    options: [
+      { text: "Sim, foto de qualidade e totalmente profissional", score: 4 },
+      { text: "Tenho foto, mas não é muito profissional", score: 2 },
+      { text: "Uso logo, mas não está bem resolvida", score: 1 },
+      { text: "Não tenho ou está desatualizada", score: 0 }
+    ]
+  },
+  {
+    id: 3, section: 1,
+    text: "Seu perfil tem link na bio com destino estratégico (WhatsApp, site, agendamento)?",
+    options: [
+      { text: "Sim, link direto para contato ou conversão", score: 4 },
+      { text: "Sim, mas o link não é muito estratégico", score: 2 },
+      { text: "Não tenho link na bio", score: 0 }
+    ]
+  },
+  {
+    id: 4, section: 1,
+    text: "Seu perfil está configurado como conta comercial ou criador de conteúdo?",
+    options: [
+      { text: "Sim, e uso os dados e insights que ela oferece", score: 4 },
+      { text: "Sim, mas não costumo usar os dados", score: 2 },
+      { text: "Não — ainda é conta pessoal", score: 0 }
+    ]
+  },
+
+  // ── Section 2: Conteúdo & Estratégia (5) ─────
+  {
+    id: 5, section: 2,
+    text: "Com que frequência você publica no feed do Instagram?",
+    options: [
+      { text: "3 ou mais vezes por semana, regularmente", score: 4 },
+      { text: "1 a 2 vezes por semana com consistência", score: 3 },
+      { text: "Algumas vezes por mês, sem regularidade", score: 1 },
+      { text: "Raramente — posto quando lembro", score: 0 }
+    ]
+  },
+  {
+    id: 6, section: 2,
+    text: "Você tem uma linha editorial definida (temas fixos de conteúdo)?",
+    options: [
+      { text: "Sim, tenho pilares de conteúdo claros e definidos", score: 4 },
+      { text: "Tenho uma ideia mas não está organizada", score: 2 },
+      { text: "Posto o que vem à mente, sem planejamento", score: 0 }
+    ]
+  },
+  {
+    id: 7, section: 2,
+    text: "Você usa diferentes formatos de conteúdo?",
+    options: [
+      { text: "Sim — Reels, carrosséis e posts regularmente", score: 4 },
+      { text: "Uso 2 formatos com alguma regularidade", score: 2 },
+      { text: "Uso principalmente 1 formato só", score: 1 },
+      { text: "Não — posto o que dá no momento", score: 0 }
+    ]
+  },
+  {
+    id: 8, section: 2,
+    text: "Você planeja seu conteúdo com antecedência?",
+    options: [
+      { text: "Sim, tenho calendário editorial do mês", score: 4 },
+      { text: "Planejo a semana com alguma antecedência", score: 3 },
+      { text: "Às vezes, mas não regularmente", score: 1 },
+      { text: "Não — sempre na hora que precisa postar", score: 0 }
+    ]
+  },
+  {
+    id: 9, section: 2,
+    text: "Seus posts têm um objetivo claro (educar, gerar confiança, converter)?",
+    options: [
+      { text: "Sim, cada post tem um objetivo definido antes de criar", score: 4 },
+      { text: "Alguns têm objetivo claro, outros nem tanto", score: 2 },
+      { text: "Não penso nisso quando crio o conteúdo", score: 0 }
+    ]
+  },
+
+  // ── Section 3: Identidade Visual (4) ─────────
+  {
+    id: 10, section: 3,
+    text: "Seu feed tem identidade visual consistente (cores, fontes, estilo)?",
+    options: [
+      { text: "Sim, totalmente consistente e com cara própria", score: 4 },
+      { text: "Tem alguma consistência, mas pode melhorar muito", score: 2 },
+      { text: "É variado e sem padrão claro", score: 0 }
+    ]
+  },
+  {
+    id: 11, section: 3,
+    text: "Você usa templates próprios e personalizados para sua marca?",
+    options: [
+      { text: "Sim, templates criados especificamente para minha marca", score: 4 },
+      { text: "Uso templates do Canva, mas não personalizados", score: 2 },
+      { text: "Crio do zero a cada post sem padrão", score: 1 },
+      { text: "Não — pego imagens e referências aleatórias", score: 0 }
+    ]
+  },
+  {
+    id: 12, section: 3,
+    text: "Sua identidade visual transmite autoridade e profissionalismo?",
+    options: [
+      { text: "Sim, claramente transmite confiança e credibilidade", score: 4 },
+      { text: "Parcialmente — alguns posts sim, outros não", score: 2 },
+      { text: "Não — meu feed parece amador ou inconsistente", score: 0 }
+    ]
+  },
+  {
+    id: 13, section: 3,
+    text: "Seu conteúdo visual é diferente do que os concorrentes fazem?",
+    options: [
+      { text: "Sim, tenho estilo próprio e reconhecível", score: 4 },
+      { text: "Um pouco, mas ainda me parece com outros perfis", score: 2 },
+      { text: "Não — parece com todo mundo no meu nicho", score: 0 }
+    ]
+  },
+
+  // ── Section 4: Engajamento (4) ────────────────
+  {
+    id: 14, section: 4,
+    text: "Você responde comentários e DMs rapidamente?",
+    options: [
+      { text: "Sim, geralmente em até 24 horas", score: 4 },
+      { text: "Às vezes, mas demoro bastante ou esqueço", score: 2 },
+      { text: "Raramente ou nunca consigo responder", score: 0 }
+    ]
+  },
+  {
+    id: 15, section: 4,
+    text: "Você usa CTAs (chamadas para ação) nos seus posts?",
+    options: [
+      { text: "Sim, em todos ou na grande maioria dos posts", score: 4 },
+      { text: "Em alguns posts, mas não é regra", score: 2 },
+      { text: "Raramente ou nunca uso CTA", score: 0 }
+    ]
+  },
+  {
+    id: 16, section: 4,
+    text: "Seus posts geram salvamentos e compartilhamentos?",
+    options: [
+      { text: "Sim, com bastante regularidade", score: 4 },
+      { text: "Às vezes em alguns posts", score: 2 },
+      { text: "Raramente, quase nunca", score: 0 }
+    ]
+  },
+  {
+    id: 17, section: 4,
+    text: "Você publica Stories regularmente para interagir com sua audiência?",
+    options: [
+      { text: "Sim, 4 ou mais vezes por semana", score: 4 },
+      { text: "2 a 3 vezes por semana", score: 3 },
+      { text: "Às vezes, sem regularidade", score: 1 },
+      { text: "Raramente ou nunca uso Stories", score: 0 }
+    ]
+  },
+
+  // ── Section 5: Resultados & Conversão (4) ────
+  {
+    id: 18, section: 5,
+    text: "Você acompanha as métricas do Instagram mensalmente?",
+    options: [
+      { text: "Sim, analiso regularmente e ajusto a estratégia", score: 4 },
+      { text: "Olho às vezes, mas sem análise estruturada", score: 2 },
+      { text: "Raramente ou nunca olho as métricas", score: 0 }
+    ]
+  },
+  {
+    id: 19, section: 5,
+    text: "Você sabe qual tipo de post gera mais engajamento e resultado para você?",
+    options: [
+      { text: "Sim, sei exatamente o que funciona", score: 4 },
+      { text: "Tenho uma ideia, mas não tenho certeza", score: 2 },
+      { text: "Não sei — não acompanho isso", score: 0 }
+    ]
+  },
+  {
+    id: 20, section: 5,
+    text: "Você recebe contatos ou novos clientes via Instagram?",
+    options: [
+      { text: "Sim, com regularidade", score: 4 },
+      { text: "Às vezes, mas muito menos do que poderia", score: 2 },
+      { text: "Raramente ou nunca", score: 0 }
+    ]
+  },
+  {
+    id: 21, section: 5,
+    text: "No geral, você está satisfeita com os resultados que o seu Instagram gera?",
+    options: [
+      { text: "Sim, está gerando resultados concretos para o negócio", score: 4 },
+      { text: "Gera alguns resultados, mas poderia ser muito melhor", score: 2 },
+      { text: "Não — não está gerando os resultados que espero", score: 1 },
+      { text: "Não — o Instagram é praticamente inativo no meu negócio", score: 0 }
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let state = {
+  currentQ: 0,
+  answers: new Array(QUESTIONS.length).fill(null),
+  userName: '',
+  userInsta: '',
+  selectedOption: null,
+  showingSectionIntro: false
+};
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateProgressBar() {
+  const answered = state.answers.filter(a => a !== null).length;
+  const pct = (answered / QUESTIONS.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function getSectionForQuestion(qIndex) {
+  return SECTIONS.find(s => s.id === QUESTIONS[qIndex].section);
+}
+
+const letters = ['A', 'B', 'C', 'D'];
+
+/* ═══════════════════════════════════════════
+   SECTION INTRO
+═══════════════════════════════════════════ */
+function showSectionIntro(sectionId) {
+  const section = SECTIONS.find(s => s.id === sectionId);
+  const qInSection = QUESTIONS.filter(q => q.section === sectionId).length;
+
+  document.getElementById('section-counter').textContent = `Seção ${sectionId} de 5`;
+  document.getElementById('s-emoji').textContent = section.emoji;
+  document.getElementById('s-badge').textContent = `Seção ${sectionId} de 5`;
+  document.getElementById('s-title').textContent = section.name;
+  document.getElementById('s-desc').textContent = section.desc;
+  document.getElementById('s-q-count').textContent = `📋 ${qInSection} perguntas nesta seção`;
+
+  // Color
+  document.getElementById('screen-section').style.background = section.color;
+  document.getElementById('s-badge').style.borderColor = section.textColor === '#fff'
+    ? 'rgba(255,255,255,.4)' : 'rgba(0,0,0,.3)';
+  document.getElementById('s-badge').style.color = section.textColor;
+  document.getElementById('s-title').style.color = section.textColor;
+  document.getElementById('s-desc').style.color = section.textColor;
+  document.getElementById('s-q-count').style.color = section.textColor;
+  document.getElementById('s-emoji').style.color = section.textColor;
+  document.getElementById('section-counter').style.color = section.textColor;
+  document.getElementById('btn-section-start').style.background =
+    section.textColor === '#fff' ? '#fff' : '#1A1A1A';
+  document.getElementById('btn-section-start').style.color =
+    section.textColor === '#fff' ? section.color : '#fff';
+
+  state.showingSectionIntro = true;
+  showScreen('screen-section');
+}
+
+document.getElementById('btn-section-start').addEventListener('click', () => {
+  state.showingSectionIntro = false;
+  showScreen('screen-question');
+  document.getElementById('progress-bar-wrap').style.display = 'block';
+  renderQuestion();
+});
+
+/* ═══════════════════════════════════════════
+   QUESTION RENDERING
+═══════════════════════════════════════════ */
+function renderQuestion() {
+  const qi = state.currentQ;
+  const q  = QUESTIONS[qi];
+  const section = getSectionForQuestion(qi);
+
+  // Nav labels
+  document.getElementById('q-counter-display').textContent = `${qi + 1} / ${QUESTIONS.length}`;
+  document.getElementById('q-number').textContent = `Pergunta ${qi + 1} de ${QUESTIONS.length}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-section-name').textContent = section.name;
+  document.getElementById('q-section-dot').style.background = section.color;
+  document.getElementById('q-section-stripe').style.background =
+    section.color + '18';
+
+  // Build options
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (state.answers[qi] === i ? ' selected' : '');
+    btn.innerHTML = `
+      <span class="option-letter" style="${state.answers[qi] === i
+        ? `background:${section.color};border-color:${section.color};color:#fff`
+        : ''}">${letters[i]}</span>
+      <span>${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(i, section.color));
+    container.appendChild(btn);
+  });
+
+  // If already answered, style correctly
+  state.selectedOption = state.answers[qi];
+  updateNextBtn();
+
+  // Buttons
+  document.getElementById('btn-prev').disabled = qi === 0;
+
+  // Animate
+  const inner = document.getElementById('question-inner');
+  inner.classList.remove('animating');
+  void inner.offsetWidth;
+  inner.classList.add('animating');
+
+  updateProgressBar();
+}
+
+function selectOption(optIndex, color) {
+  state.selectedOption = optIndex;
+  state.answers[state.currentQ] = optIndex;
+
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === optIndex);
+    btn.querySelector('.option-letter').style.cssText =
+      i === optIndex
+        ? `background:${color};border-color:${color};color:#fff`
+        : '';
+    btn.style.borderColor = i === optIndex ? color : '';
+    btn.style.boxShadow   = i === optIndex ? `4px 4px 0 ${color}` : '';
+  });
+
+  updateNextBtn();
+  updateProgressBar();
+
+  // Auto-advance after short delay
+  setTimeout(() => {
+    if (state.selectedOption !== null) advanceQuestion();
+  }, 500);
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('btn-next');
+  const isLast = state.currentQ === QUESTIONS.length - 1;
+  if (state.selectedOption !== null) {
+    btn.classList.add('enabled');
+    btn.textContent = isLast ? 'Ver resultado →' : 'Próxima →';
+  } else {
+    btn.classList.remove('enabled');
+    btn.textContent = 'Próxima →';
+  }
+}
+
+function advanceQuestion() {
+  if (state.selectedOption === null) return;
+
+  const nextQi = state.currentQ + 1;
+
+  if (nextQi >= QUESTIONS.length) {
+    // Done
+    showResults();
+    return;
+  }
+
+  // Check if we're crossing into a new section
+  const curSection  = QUESTIONS[state.currentQ].section;
+  const nextSection = QUESTIONS[nextQi].section;
+
+  state.currentQ = nextQi;
+  state.selectedOption = state.answers[nextQi];
+
+  if (nextSection !== curSection) {
+    showSectionIntro(nextSection);
+  } else {
+    renderQuestion();
+  }
+}
+
+document.getElementById('btn-next').addEventListener('click', advanceQuestion);
+
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if (state.currentQ > 0) {
+    state.currentQ--;
+    state.selectedOption = state.answers[state.currentQ];
+    renderQuestion();
+  }
+});
+
+/* ═══════════════════════════════════════════
+   START
+═══════════════════════════════════════════ */
+document.getElementById('btn-start').addEventListener('click', () => {
+  const nameEl  = document.getElementById('input-name');
+  const instaEl = document.getElementById('input-insta');
+  const name  = nameEl.value.trim();
+  const insta = instaEl.value.trim();
+
+  if (!name) {
+    nameEl.focus();
+    nameEl.style.borderColor = '#E91E8C';
+    return;
+  }
+
+  state.userName  = name;
+  state.userInsta = insta || '';
+
+  // Show first section intro
+  showSectionIntro(1);
+});
+
+/* ═══════════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════════ */
+function showResults() {
+  showScreen('screen-results');
+  document.getElementById('progress-bar-wrap').style.display = 'none';
+
+  // Personalize
+  const firstName = state.userName.split(' ')[0];
+  document.getElementById('results-name').textContent = firstName;
+  if (state.userInsta) {
+    document.getElementById('results-insta-display').textContent =
+      state.userInsta.startsWith('@') ? state.userInsta : '@' + state.userInsta;
+  }
+
+  // Calculate scores
+  let totalScore = 0;
+  let totalMax   = 0;
+  const sectionScores = {};
+
+  SECTIONS.forEach(s => {
+    const qs = QUESTIONS.filter(q => q.section === s.id);
+    const maxForSection = qs.length * 4;
+    let got = 0;
+    qs.forEach((q, qi) => {
+      const globalIdx = QUESTIONS.indexOf(q);
+      const ansIdx = state.answers[globalIdx];
+      if (ansIdx !== null && ansIdx !== undefined) {
+        got += q.options[ansIdx].score;
+      }
+    });
+    sectionScores[s.id] = { got, max: maxForSection, pct: Math.round((got / maxForSection) * 100) };
+    totalScore += got;
+    totalMax   += maxForSection;
+  });
+
+  const overallPct = Math.round((totalScore / totalMax) * 100);
+
+  // Level
+  let level, levelColor;
+  if      (overallPct >= 86) { level = "Presença Forte 🔥";       levelColor = "#C5DF00"; }
+  else if (overallPct >= 71) { level = "Quase Lá ✨";             levelColor = "#5C59C2"; }
+  else if (overallPct >= 51) { level = "Crescendo 📈";            levelColor = "#3DB8E0"; }
+  else if (overallPct >= 31) { level = "Em Construção 🔧";        levelColor = "#FF6B35"; }
+  else                       { level = "Perfil Invisível 👻";     levelColor = "#E91E8C"; }
+
+  // Animate score circle
+  const circumference = 2 * Math.PI * 80; // 502.65
+  const circle = document.getElementById('score-circle');
+  circle.style.stroke = levelColor;
+  const pctEl = document.getElementById('score-pct-display');
+  pctEl.textContent = '0';
+
+  setTimeout(() => {
+    const offset = circumference - (overallPct / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+
+    let current = 0;
+    const duration = 1500;
+    const step = duration / overallPct;
+    const counter = setInterval(() => {
+      current++;
+      pctEl.textContent = current;
+      if (current >= overallPct) clearInterval(counter);
+    }, step);
+  }, 300);
+
+  document.getElementById('level-badge').textContent = level;
+  document.getElementById('level-badge').style.borderColor = levelColor;
+  document.getElementById('level-badge').style.color = levelColor;
+
+  // Section bars
+  const barsContainer = document.getElementById('section-bars');
+  barsContainer.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const ss = sectionScores[s.id];
+    const bar = document.createElement('div');
+    bar.className = 'section-bar-item';
+    bar.innerHTML = `
+      <div class="section-bar-header">
+        <span class="section-bar-name">${s.emoji} ${s.name}</span>
+        <span class="section-bar-score" style="color:${s.color}">${ss.pct}%</span>
+      </div>
+      <div class="section-bar-track">
+        <div class="section-bar-fill" data-pct="${ss.pct}" style="background:${s.color};"></div>
+      </div>`;
+    barsContainer.appendChild(bar);
+  });
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.section-bar-fill').forEach(fill => {
+      fill.style.width = fill.dataset.pct + '%';
+    });
+  }, 400);
+
+  // Best & worst sections
+  const sorted = Object.entries(sectionScores).sort((a,b) => b[1].pct - a[1].pct);
+  const bestId  = parseInt(sorted[0][0]);
+  const worstId = parseInt(sorted[sorted.length - 1][0]);
+  const bestSec  = SECTIONS.find(s => s.id === bestId);
+  const worstSec = SECTIONS.find(s => s.id === worstId);
+
+  document.getElementById('insights-row').innerHTML = `
+    <div class="insight-card" style="border-color:${bestSec.color}; box-shadow: 4px 4px 0 ${bestSec.color}">
+      <div class="insight-label" style="color:${bestSec.color}">✦ Seu ponto forte</div>
+      <div class="insight-title">${bestSec.emoji} ${bestSec.name}</div>
+      <div class="insight-desc">${sectionScores[bestId].pct}% — Aqui você já tem uma base sólida. Isso precisa ser mantido e aprofundado.</div>
+    </div>
+    <div class="insight-card" style="border-color:${worstSec.color}; box-shadow: 4px 4px 0 ${worstSec.color}">
+      <div class="insight-label" style="color:${worstSec.color}">⚠ Atenção aqui</div>
+      <div class="insight-title">${worstSec.emoji} ${worstSec.name}</div>
+      <div class="insight-desc">${sectionScores[worstId].pct}% — Essa é a área que mais está limitando o crescimento do seu Instagram agora.</div>
+    </div>`;
+
+  // Generate recommendations
+  const recs = [];
+  const recColors = ['#E91E8C', '#5C59C2', '#FF6B35'];
+
+  // Top 3 weakest sections as recommendations
+  const weakest = [...sorted].reverse().slice(0, 3);
+  weakest.forEach(([sId], i) => {
+    const sec = SECTIONS.find(s => s.id === parseInt(sId));
+    recs.push({
+      title: sec.recLow.title,
+      text: sec.recLow.text,
+      color: recColors[i]
+    });
+  });
+
+  const recContainer = document.getElementById('recommendations-list');
+  recContainer.innerHTML = '';
+  recs.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = 'rec-card';
+    card.style.boxShadow = `3px 3px 0 ${r.color}`;
+    card.innerHTML = `
+      <div class="rec-number" style="background:${r.color}; color:#fff; border-color:${r.color}">${i+1}</div>
+      <div class="rec-content">
+        <div class="rec-title">${r.title}</div>
+        <div class="rec-text">${r.text}</div>
+      </div>`;
+    recContainer.appendChild(card);
+  });
+
+  // CTA WhatsApp — personalize message
+  const waMsg = encodeURIComponent(
+    `Oi! Acabei de fazer o diagnóstico de social media da Veez. Sou ${firstName}` +
+    (state.userInsta ? ` (${state.userInsta.startsWith('@') ? state.userInsta : '@'+state.userInsta})` : '') +
+    ` e tirei ${overallPct}% — ${level.replace(/[^\w\s]/gi, '').trim()}. Quero saber como melhorar!`
+  );
+  document.getElementById('cta-wa-btn').href =
+    `https://wa.me/55XXXXXXXXXXX?text=${waMsg}`;
+
+  // Scroll to top of results
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
